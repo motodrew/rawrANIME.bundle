@@ -58,6 +58,8 @@ Known Issues
 Changelog
 =========
 
+**0.02** - 08/06/14 - Fix for mp4upload. Fix add bookmark string.
+
 **0.01** - 21/03/14 - Initial release.
 
 Donate

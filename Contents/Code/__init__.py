@@ -1,6 +1,6 @@
 ######################################################################################
 #
-#	rawrANIME (BY TEHCRUCIBLE) - v0.01
+#	rawrANIME (BY TEHCRUCIBLE) - v0.02
 #
 ######################################################################################
 
@@ -210,7 +210,7 @@ def PageEpisodes(show_title, show_url):
 		#provide a way to add or remove from favourites list
 		oc.add(DirectoryObject(
 			key = Callback(AddBookmark, show_title = show_title, show_url = show_url),
-			title = "Add/Remove Bookmark",
+			title = "Add Bookmark",
 			summary = "You can add " + show_title + " to your Bookmarks list, to make it easier to find later.",
 			thumb = R(ICON_QUEUE)
 			)
@@ -236,7 +236,7 @@ def PageEpisodes(show_title, show_url):
 		#provide a way to add or remove from favourites list
 		oc.add(DirectoryObject(
 			key = Callback(AddBookmark, show_title = show_title, show_url = show_url),
-			title = "Add/Remove Bookmark",
+			title = "Add Bookmark",
 			summary = "You can add " + show_title + " to your Bookmarks list, to make it easier to find later.",
 			thumb = R(ICON_QUEUE)
 			)
