@@ -1,6 +1,6 @@
 ######################################################################################
 #
-#	rawrANIME (BY TEHCRUCIBLE) - v0.02
+#	rawrANIME (BY TEHCRUCIBLE) - v0.03
 #
 ######################################################################################
 
@@ -279,7 +279,7 @@ def GetMirrors(ep_url):
 		video_type = each.xpath("./div/div/@class")[0].split("_trait")[0].upper()
 		video_quality = each.xpath("./div/div/@class")[1].split("_trait")[0].upper().replace("_"," ")
 		video_id = each.xpath("./@rn")[0]
-		video_url = ep_url + "??" + video_id
+		video_url = 'http:' + String.Quote(ep_url.split(':',1)[1], usePlus=False) + "??" + video_id
 		video_thumb = BASE_URL + each.xpath("./img/@src")[0]
 		video_host = each.xpath("./text()")[2].strip().upper()
 		video_title = video_type + " " + video_quality + " " + video_host
