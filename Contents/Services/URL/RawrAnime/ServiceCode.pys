@@ -85,6 +85,7 @@ def PlayVideo(url):
 		page_data = HTML.ElementFromURL(url)
 		string_data = HTML.StringFromElement(page_data)
 		url = RE_ARKVID.search(string_data).group().rsplit('"')[0]
+		url = url.replace('amp;', '')
 		Log(url)
 		return IndirectResponse(VideoClipObject, key=url)
 	
