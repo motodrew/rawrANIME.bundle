@@ -58,6 +58,8 @@ Known Issues
 Changelog
 =========
 
+**0.04** - 30/09/14 - Added Latest Episodes list.
+
 **0.03** - 07/07/14 - Fix bug caused by non-unicode characters in video urls.
 
 **0.02** - 08/06/14 - Fix for mp4upload. Fix add bookmark string.

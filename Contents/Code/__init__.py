@@ -1,6 +1,6 @@
 ######################################################################################
 #
-#	rawrANIME (BY TEHCRUCIBLE) - v0.03
+#	rawrANIME (BY TEHCRUCIBLE) - v0.04
 #
 ######################################################################################
 
@@ -39,6 +39,7 @@ def Start():
 def MainMenu():
 
 	oc = ObjectContainer()
+	oc.add(DirectoryObject(key = Callback(LatestCategory, title="Latest Episodes"), title = "Latest Episodes", thumb = R(ICON_LIST)))
 	oc.add(DirectoryObject(key = Callback(ShowCategory, title="Most Popular", category = "/list/popular"), title = "Most Popular", thumb = R(ICON_LIST)))
 	oc.add(DirectoryObject(key = Callback(ShowCategory, title="Top Rated", category = "/list/toprated"), title = "Top Rated", thumb = R(ICON_LIST)))
 	oc.add(DirectoryObject(key = Callback(ShowCategory, title="Ongoing Anime", category = "/list/popularongoing"), title = "Ongoing Anime", thumb = R(ICON_LIST)))
@@ -137,6 +138,36 @@ def Search(query):
 		return ObjectContainer(header="Error", message="Nothing found! Try something less specific.") 
 	
 	return oc
+
+######################################################################################
+# Creates latest episode objects from the front page
+
+@route(PREFIX + "/latestcategory")	
+def LatestCategory(title):
+
+	oc = ObjectContainer(title1 = title)
+	page_data = HTML.ElementFromURL(BASE_URL)
+
+	for each in page_data.xpath("//div[@class='new_episode']"):
+
+		ep_url = each.xpath("./@onclick")[0].split("'")[1] + "subbed"
+		ep_title = each.xpath("./h3/text()")[0].strip() + " - " + each.xpath("./h4/b/text()")[0].strip()
+		ep_thumb = BASE_URL + each.xpath("./img/@src")[0]
+		
+		oc.add(PopupDirectoryObject(
+			key = Callback(GetMirrors, ep_url = ep_url),
+			title = ep_title,
+			thumb = R(ICON_COVER)
+			)
+		)
+	
+	#check for results and display an error if none
+	if len(oc) < 1:
+		Log ("No shows found! Check xpath queries.")
+		return ObjectContainer(header="Error", message="Error! Please let TehCrucible know, at the Plex forums.")  
+	
+	return oc	
+	
 
 ######################################################################################
 # Creates page url from category and creates objects from that page
