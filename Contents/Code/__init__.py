@@ -16,6 +16,8 @@ ICON_WATCHED = "icon-watched.png"
 ICON_MARK = "icon-mark.png"
 ICON_MARKALL = "icon-markall.png"
 ICON_UNMARKALL = "icon-unmarkall.png"
+ICON_LISTALL = "icon-listall.png"
+ICON_HASH = "icon-hash.png"
 BASE_URL = "http://rawranime.tv"
 
 ######################################################################################
@@ -44,9 +46,12 @@ def MainMenu():
 
 	oc = ObjectContainer()
 	oc.add(DirectoryObject(key = Callback(LatestCategory, title="Latest Episodes"), title = "Latest Episodes", thumb = R(ICON_LIST)))
-	oc.add(DirectoryObject(key = Callback(ShowCategory, title="Most Popular", category = "/list/popular"), title = "Most Popular", thumb = R(ICON_LIST)))
+	oc.add(DirectoryObject(key = Callback(ChooseAlphabetically, title="All Anime", category = "/list/listmode"), title = "All Anime", thumb = R(ICON_LIST)))
+	oc.add(DirectoryObject(key = Callback(ChooseAlphabetically, title="Ongoing Anime", category = "/list/ongoing"), title = "Ongoing Anime", thumb = R(ICON_LIST)))
+	oc.add(DirectoryObject(key = Callback(ChooseAlphabetically, title="Movies", category = "/list/movies"), title = "Movies", thumb = R(ICON_LIST)))
 	oc.add(DirectoryObject(key = Callback(ShowCategory, title="Top Rated", category = "/list/toprated"), title = "Top Rated", thumb = R(ICON_LIST)))
-	oc.add(DirectoryObject(key = Callback(ShowCategory, title="Ongoing Anime", category = "/list/popularongoing"), title = "Ongoing Anime", thumb = R(ICON_LIST)))
+	oc.add(DirectoryObject(key = Callback(ShowCategory, title="Most Popular", category = "/list/popular"), title = "Most Popular", thumb = R(ICON_LIST)))
+	oc.add(DirectoryObject(key = Callback(ShowCategory, title="Most Popular Ongoing", category = "/list/popularongoing"), title = "Most Popular Ongoing", thumb = R(ICON_LIST)))
 	oc.add(DirectoryObject(key = Callback(Bookmarks, title="My Bookmarks"), title = "My Bookmarks", thumb = R(ICON_QUEUE)))
 	oc.add(InputDirectoryObject(key=Callback(Search), title = "Search", prompt = "Search for anime?", thumb = R(ICON_SEARCH)))
 	
@@ -141,27 +146,28 @@ def Search(query):
 		Log ("No shows found! Check search query.")
 		return ObjectContainer(header="Error", message="Nothing found! Try something less specific.") 
 	
-	return oc
-
+	return oc	
+	
 ######################################################################################
 # Creates latest episode objects from the front page
 
 @route(PREFIX + "/latestcategory")	
 def LatestCategory(title):
 
-	oc = ObjectContainer(title1 = title)
+	oc = ObjectContainer(title1 = title, no_cache = True)
 	page_data = HTML.ElementFromURL(BASE_URL)
+	eps_list = page_data.xpath("//div[@class='new_episode']")
 
-	for each in page_data.xpath("//div[@class='new_episode']"):
-
-		ep_url = each.xpath("./@onclick")[0].split("'")[1] + "subbed"
-		ep_title = each.xpath("./h3/text()")[0].strip() + " - " + each.xpath("./h4/b/text()")[0].strip()
-		ep_thumb = BASE_URL + each.xpath("./img/@src")[0]
+	for each in eps_list:
+		ep_url = each.xpath("./h5/a/@href")
+		episode = each.xpath("./h3/text()")[0].strip() + " - " + each.xpath("./h4/b/text()")[0].strip()
+		ep_title = each.xpath("./h4/b/text()")[0].strip()
+		show_title = each.xpath("./h3/text()")
 		
 		oc.add(PopupDirectoryObject(
-			key = Callback(GetMirrors, ep_url = ep_url),
-			title = ep_title,
-			thumb = R(ICON_COVER)
+			key = Callback(GetMirrors, ep_url = ep_url, ep_title = ep_title, show_title = show_title),
+			title = episode,
+			thumb = Callback(GetThumb, ep_url = ep_url)
 			)
 		)
 	
@@ -171,8 +177,7 @@ def LatestCategory(title):
 		return ObjectContainer(header="Error", message="Error! Please let TehCrucible know, at the Plex forums.")  
 	
 	return oc	
-	
-
+		
 ######################################################################################
 # Creates page url from category and creates objects from that page
 
@@ -202,7 +207,93 @@ def ShowCategory(title, category):
 		return ObjectContainer(header="Error", message="Error! Please let TehCrucible know, at the Plex forums.")  
 	
 	return oc
+	
+######################################################################################
+# Choose show or movie alphabetically
 
+@route(PREFIX + "/choosealphabetically")
+def ChooseAlphabetically(title, category):
+
+	oc = ObjectContainer(title1 = title, no_cache = True)
+	page_data = HTML.ElementFromURL(BASE_URL + category)
+	show_letters = page_data.xpath("//td[contains(@class, 'listletter')]/a/text()")
+		
+	oc.add(DirectoryObject(
+		key = Callback(ShowCategorySorted, title = "List All", category = category),
+		title = "List All", 
+		thumb = R(ICON_LISTALL)
+		)
+	)
+	
+	for letter in show_letters:
+		ICON_ALPHA = "icon-" + letter.upper() + ".png"
+
+		if letter == "#":
+			oc.add(DirectoryObject(
+			key = Callback(ShowCategorySorted, title = letter, category = category),
+			title = letter,
+			thumb = R(ICON_HASH)
+			)
+		)
+		else:
+			oc.add(DirectoryObject(
+				key = Callback(ShowCategorySorted, title = letter, category = category),
+				title = letter,
+				thumb = R(ICON_ALPHA)
+				)
+			)
+		
+	return oc
+		
+################################################################################################
+# Creates page url from category and creates objects from that page sorting them alphabetically
+
+@route(PREFIX + "/showcategorysorted")	
+def ShowCategorySorted(title, category):
+
+	oc = ObjectContainer(title1 = title)
+	page_data = HTML.ElementFromURL(BASE_URL + category)
+	list_all = "List All"
+	list_category = ('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','W','Y','Z')
+		
+	for each in page_data.xpath("//tr[contains(@class, 'list ')]"):
+
+		show_url = each.xpath("./td[@class='animetitle']/a/@href")[0]
+		show_title = each.xpath("./td[@class='animetitle']/a/text()")[0].strip()
+		show_thumb = BASE_URL + each.xpath("./td//img/@data-original")[0]
+		
+		if title == list_all:
+			oc.add(DirectoryObject(
+				key = Callback(PageEpisodes, show_title = show_title, show_url = show_url),
+				title = show_title,
+				thumb = Resource.ContentsOfURLWithFallback(url = show_thumb, fallback='icon-cover.png'),
+				summary = "Watch " + show_title + " in HD now from rawrANIME.tv!"
+				)
+			)		
+		elif show_title[0].upper() == title:
+			oc.add(DirectoryObject(
+				key = Callback(PageEpisodes, show_title = show_title, show_url = show_url),
+				title = show_title,
+				thumb = Resource.ContentsOfURLWithFallback(url = show_thumb, fallback='icon-cover.png'),
+				summary = "Watch " + show_title + " in HD now from rawrANIME.tv!"
+				)
+			)
+		elif show_title[0].upper() not in list_category and title not in list_category:
+			oc.add(DirectoryObject(
+				key = Callback(PageEpisodes, show_title = show_title, show_url = show_url),
+				title = show_title,
+				thumb = Resource.ContentsOfURLWithFallback(url = show_thumb, fallback='icon-cover.png'),
+				summary = "Watch " + show_title + " in HD now from rawrANIME.tv!"
+				)
+			)
+		
+	#check for results and display an error if none
+	if len(oc) < 1:
+		Log ("No shows found! Check xpath queries.")
+		return ObjectContainer(header="Error", message="Error! Please let TehCrucible know, at the Plex forums.")  
+	
+	return oc
+	
 ######################################################################################
 # Creates an object for every 30 episodes (or part thereof) from a show url
 
@@ -453,8 +544,7 @@ def EditWatched(ep_title, show_title):
 		Data.SaveObject(show_title, watched)
 		return ObjectContainer(header=ep_title, message='This episode has been added to your watched list.')
 
-
-########################################################################################
+######################################################################################
 # Remove watched mark from all episodes of a show
 
 @route(PREFIX + "/removewatchedshow")
@@ -478,8 +568,7 @@ def RemoveWatchedShow(show_url, show_title, start_ep, end_ep):
 
 	return ObjectContainer(header=show_title, message='All watched marks for this show have been removed.', no_cache = True)
 
-	
-########################################################################################
+######################################################################################
 # Add watched mark for all episodes of a show
 
 @route(PREFIX + "/addwatchedshow")
