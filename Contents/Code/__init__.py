@@ -392,7 +392,7 @@ def ListEpisodes(show_title, show_url, start_ep, end_ep):
 			if ep_title in watched:
 				oc.add(PopupDirectoryObject(
 				key = Callback(GetMirrors, ep_url = ep_url, ep_title = ep_title, show_title = show_title),
-				title = ep_title + "(Watched)",
+				title = ep_title + " [Watched]",
 				thumb = R(ICON_WATCHED)
 				)
 			)
