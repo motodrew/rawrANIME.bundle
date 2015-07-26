@@ -2,7 +2,7 @@
 
 BASE_URL = 'http://rawranime.tv'
 RE_SESSIONID = Regex("session_id'].*= '.*(?=';)")
-RE_ARKVID = Regex('(?<=src=")http:.*(?=")')
+RE_ARKVID = Regex('(?<=src=")\/\/.*arkvid.*(?=")')
 RE_MP4UPLOAD = Regex("(?<='file': ')http:.*(?=')")
 RE_YOURUPLOAD = Regex('(?<=file: ").*(?=")')
 RE_UPLOADC = Regex("(?<='file',').*(?=')")
@@ -85,6 +85,7 @@ def PlayVideo(url):
 		page_data = HTML.ElementFromURL(url)
 		string_data = HTML.StringFromElement(page_data)
 		url = RE_ARKVID.search(string_data).group().rsplit('"')[0]
+		url = "http:" + url
 		url = url.replace('amp;', '')
 		Log(url)
 		return IndirectResponse(VideoClipObject, key=url)
