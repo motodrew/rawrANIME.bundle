@@ -29,7 +29,7 @@ def MetadataObjectForURL(url):
 	except:
 		show_rating = 0.00
 		
-	return MovieObject(
+	return VideoClipObject(
 		title = ep_title,
 		summary = show_source + "\n\n" + show_summary,
 		thumb = show_thumb,
@@ -56,7 +56,7 @@ def MediaObjectsForURL(url):
 	return[
 		MediaObject(
 			optimized_for_streaming = True,
-			container = 'mp4',
+			container = Container.MP4,
 			audio_channels = 2,
 			video_codec = VideoCodec.H264,
 			audio_codec = AudioCodec.AAC,

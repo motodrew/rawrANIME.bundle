@@ -27,6 +27,7 @@ System Requirements
 		- Windows 8
 		- PS3/360
 		- Roku
+		- AndroidTV
 		
 	- Not Tested:
 		- iOS
@@ -52,7 +53,7 @@ How To Install
 Known Issues
 ============
 
-- Episodes don't load on AndroidTV
+- None
 
 
 Changelog
@@ -62,6 +63,7 @@ Changelog
 	- Many cosmetic changes
 	- Fixed bookmarks
 	- Mark shows/episodes as watched/unwatched
+	- Works on AndroidTV
 
 - **v0.04** - 2014-09-30
 
