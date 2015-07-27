@@ -217,9 +217,10 @@ def ChooseAlphabetically(title, category):
 	oc = ObjectContainer(title1 = title, no_cache = True)
 	page_data = HTML.ElementFromURL(BASE_URL + category)
 	show_letters = page_data.xpath("//td[contains(@class, 'listletter')]/a/text()")
+	category_title = title
 		
 	oc.add(DirectoryObject(
-		key = Callback(ShowCategorySorted, title = "List All", category = category),
+		key = Callback(ShowCategorySorted, title = "List All", category = category, category_title = category_title),
 		title = "List All", 
 		thumb = R(ICON_LISTALL)
 		)
@@ -230,14 +231,14 @@ def ChooseAlphabetically(title, category):
 
 		if letter == "#":
 			oc.add(DirectoryObject(
-			key = Callback(ShowCategorySorted, title = letter, category = category),
+			key = Callback(ShowCategorySorted, title = letter, category = category, category_title = category_title),
 			title = letter,
 			thumb = R(ICON_HASH)
 			)
 		)
 		else:
 			oc.add(DirectoryObject(
-				key = Callback(ShowCategorySorted, title = letter, category = category),
+				key = Callback(ShowCategorySorted, title = letter, category = category, category_title = category_title),
 				title = letter,
 				thumb = R(ICON_ALPHA)
 				)
@@ -249,9 +250,9 @@ def ChooseAlphabetically(title, category):
 # Creates page url from category and creates objects from that page sorting them alphabetically
 
 @route(PREFIX + "/showcategorysorted")	
-def ShowCategorySorted(title, category):
+def ShowCategorySorted(title, category, category_title):
 
-	oc = ObjectContainer(title1 = title, no_cache = True)
+	oc = ObjectContainer(title1 = '%s > %s' % (category_title, title), no_cache = True)
 	page_data = HTML.ElementFromURL(BASE_URL + category)
 	list_all = "List All"
 	list_category = ('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','W','Y','Z')
@@ -437,7 +438,7 @@ def ListEpisodes(show_title, show_url, start_ep, end_ep):
 @route(PREFIX + "/getmirrors")	
 def GetMirrors(ep_url, ep_title, show_title):
 
-	oc = ObjectContainer(title2 = ep_title, no_cache = True)
+	oc = ObjectContainer(title2 = '%s > %s' % (show_title, ep_title), no_cache = True)
 	page_data = HTML.ElementFromURL(ep_url)
 	
 	for each in page_data.xpath("//if/div[contains(@class, 'mirror')]"):
