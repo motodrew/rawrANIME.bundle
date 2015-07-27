@@ -52,11 +52,15 @@ How To Install
 Known Issues
 ============
 
-- None
+- Episodes don't load on AndroidTV
 
 
 Changelog
 =========
+
+**0.05** - 26/07-15 - Many cosmetic changes
+                    - Fixed bookmarks
+                    - Mark shows/episodes as watched/unwatched
 
 **0.04** - 30/09/14 - Added Latest Episodes list.
 
