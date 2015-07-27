@@ -16,7 +16,7 @@ ICON_COVER = "icon-cover.png"
 
 def MetadataObjectForURL(url):
 	
-	page_data = HTML.ElementFromURL(url.rsplit("??")[0])
+	page_data = HTML.ElementFromURL(url.rsplit("?")[0])
 	show_data = HTML.ElementFromURL(page_data.xpath("//div[@id='sidebar_functions']/a/@href")[0])
 	ep_title = page_data.xpath("//div[@id='episode_title']/text()")[0].strip()
 	show_thumb = BASE_URL + show_data.xpath("//img[@class='lazy']/@data-original")[0]
@@ -44,7 +44,7 @@ def MetadataObjectForURL(url):
 
 def MediaObjectsForURL(url):
 
-	page_data = HTML.ElementFromURL(url.rsplit("??")[0])
+	page_data = HTML.ElementFromURL(url.rsplit("?")[0])
 	resolution = HTML.StringFromElement(page_data.xpath("//div[contains(@class, 'selected')]/div[@class='mirror_traits']")[0])
 	if resolution.find("1080") > 0:
 		resolution = 1080
@@ -56,7 +56,7 @@ def MediaObjectsForURL(url):
 	return[
 		MediaObject(
 			optimized_for_streaming = True,
-			container = Container.MP4,
+			container = 'mp4',
 			audio_channels = 2,
 			video_codec = VideoCodec.H264,
 			audio_codec = AudioCodec.AAC,
@@ -71,12 +71,12 @@ def MediaObjectsForURL(url):
 @indirect
 def PlayVideo(url):
 
-	page_data = HTML.ElementFromURL(url.rsplit("??")[0])
+	page_data = HTML.ElementFromURL(url.rsplit("?")[0])
 	string_data = HTML.StringFromElement(page_data)
 	session_id = RE_SESSIONID.search(string_data).group().split("= '")[1]
 	auth_key = page_data.xpath("//input[@name='auth_key']/@value")[0]
 	referer = page_data.xpath("//input[@name='referer']/@value")[0]
-	video_id = url.rsplit("??")[1]
+	video_id = url.rsplit("?")[1]
 	request_url = "http://rawranime.tv/index.php?s=" + session_id + "&app=anime&module=ajax&section=anime_watch_handler"
 	iframe_data = HTML.ElementFromString(HTTP.Request(request_url, values = {'md5check':auth_key, 'do':'getvid', 'id':video_id}, headers={'referer':referer}))
 	url = iframe_data.xpath("//iframe/@src")[0]

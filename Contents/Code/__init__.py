@@ -144,7 +144,7 @@ def Search(query):
 	#check for zero results and display error
 	if len(oc) < 1:
 		Log ("No shows found! Check search query.")
-		return ObjectContainer(header="Error", message="Nothing found! Try something less specific.") 
+		return ObjectContainer(header="Error", message="Nothing found! Try something less specific.", no_cache = True)
 	
 	return oc	
 	
@@ -174,7 +174,7 @@ def LatestCategory(title):
 	#check for results and display an error if none
 	if len(oc) < 1:
 		Log ("No shows found! Check xpath queries.")
-		return ObjectContainer(header="Error", message="Error! Please let TehCrucible know, at the Plex forums.")  
+		return ObjectContainer(header="Error", message="Error! Please let TehCrucible know, at the Plex forums.", no_cache = True)
 	
 	return oc	
 		
@@ -184,7 +184,7 @@ def LatestCategory(title):
 @route(PREFIX + "/showcategory")	
 def ShowCategory(title, category):
 
-	oc = ObjectContainer(title1 = title)
+	oc = ObjectContainer(title1 = title, no_cache = True)
 	page_data = HTML.ElementFromURL(BASE_URL + category)
 
 	for each in page_data.xpath("//tr[contains(@class, 'list ')]"):
@@ -204,7 +204,7 @@ def ShowCategory(title, category):
 	#check for results and display an error if none
 	if len(oc) < 1:
 		Log ("No shows found! Check xpath queries.")
-		return ObjectContainer(header="Error", message="Error! Please let TehCrucible know, at the Plex forums.")  
+		return ObjectContainer(header="Error", message="Error! Please let TehCrucible know, at the Plex forums.", no_cache = True)
 	
 	return oc
 	
@@ -251,7 +251,7 @@ def ChooseAlphabetically(title, category):
 @route(PREFIX + "/showcategorysorted")	
 def ShowCategorySorted(title, category):
 
-	oc = ObjectContainer(title1 = title)
+	oc = ObjectContainer(title1 = title, no_cache = True)
 	page_data = HTML.ElementFromURL(BASE_URL + category)
 	list_all = "List All"
 	list_category = ('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','W','Y','Z')
@@ -290,7 +290,7 @@ def ShowCategorySorted(title, category):
 	#check for results and display an error if none
 	if len(oc) < 1:
 		Log ("No shows found! Check xpath queries.")
-		return ObjectContainer(header="Error", message="Error! Please let TehCrucible know, at the Plex forums.")  
+		return ObjectContainer(header="Error", message="Error! Please let TehCrucible know, at the Plex forums.", no_cache = True)
 	
 	return oc
 	
@@ -300,7 +300,7 @@ def ShowCategorySorted(title, category):
 @route(PREFIX + "/pageepisodes")
 def PageEpisodes(show_title, show_url):
 
-	oc = ObjectContainer(title1 = show_title)
+	oc = ObjectContainer(title1 = show_title, no_cache = True)
 	page_data = HTML.ElementFromURL(show_url)
 	show_thumb = BASE_URL + page_data.xpath("//div[@class='anime_info']//img/@data-original")[0]
 	show_ep_count = len(page_data.xpath("//div[@class='episode_box']"))
@@ -323,7 +323,7 @@ def PageEpisodes(show_title, show_url):
 			key = Callback(ListEpisodes, show_title = show_title, show_url = show_url, start_ep = start_ep, end_ep = end_ep),
 			title = "Episodes " + start_ep_title + " - " + end_ep_title,
 			thumb = Resource.ContentsOfURLWithFallback(url = show_thumb, fallback='icon-cover.png'),
-			summary = show_summary
+#			summary = show_summary
 			)
 		)
 		
@@ -355,7 +355,7 @@ def PageEpisodes(show_title, show_url):
 			key = Callback(ListEpisodes, show_title = show_title, show_url = show_url, start_ep = offset, end_ep = offset + (show_ep_count % 30)),
 			title = "Episodes " + start_ep_title + " - " + end_ep_title,
 			thumb = Resource.ContentsOfURLWithFallback(url = show_thumb, fallback='icon-cover.png'),
-			summary = show_summary
+#			summary = show_summary
 			)
 		)
 	
@@ -381,7 +381,7 @@ def ListEpisodes(show_title, show_url, start_ep, end_ep):
 	
 	for each in eps_list[int(start_ep):int(end_ep)]:
 		ep_url = each.xpath(".//a/@href")[0]
-		ep_title = "Episode " + each.xpath("./div[@class='list_header_epnumber']/text()")[0].strip() + " " + each.xpath("./div[@class='list_header_epname']/text()")[0].strip()
+		ep_title = "Episode " + each.xpath("./div[@class='list_header_epnumber']/text()")[0].strip() + ": " + each.xpath("./div[@class='list_header_epname']/text()")[0].strip()
 		
 		# Determine which thumb and title to show, based on if episode has been marked as watched or not
 		if Data.Exists(show_title):
@@ -390,21 +390,21 @@ def ListEpisodes(show_title, show_url, start_ep, end_ep):
 			watched = Data.LoadObject(show_title)
 		
 			if ep_title in watched:
-				oc.add(PopupDirectoryObject(
+				oc.add(DirectoryObject(
 				key = Callback(GetMirrors, ep_url = ep_url, ep_title = ep_title, show_title = show_title),
 				title = ep_title + " [Watched]",
 				thumb = R(ICON_WATCHED)
 				)
 			)
 			else:
-				oc.add(PopupDirectoryObject(
+				oc.add(DirectoryObject(
 				key = Callback(GetMirrors, ep_url = ep_url, ep_title = ep_title, show_title = show_title),
 				title = ep_title,
 				thumb = R(ICON_COVER)
 				)
 			)
 		else:
-			oc.add(PopupDirectoryObject(
+			oc.add(DirectoryObject(
 			key = Callback(GetMirrors, ep_url = ep_url, ep_title = ep_title, show_title = show_title),
 			title = ep_title,
 			thumb = R(ICON_COVER)
@@ -423,9 +423,9 @@ def ListEpisodes(show_title, show_url, start_ep, end_ep):
 	#add a way to remove all watched marks from episodes of show
 	oc.add(DirectoryObject(
 		key = Callback(RemoveWatchedShow, show_url = show_url, show_title = show_title, start_ep = start_ep, end_ep = end_ep),
-		title = "Remove all watched marks from this show",
+		title = "Mark all episodes of this show as unwatched",
 		thumb = R(ICON_UNMARKALL),
-		summary = "This will clear all watched marks for this show."
+		summary = "This will mark all episodes as unwatched."
 		)
 	)
 		
@@ -437,17 +437,17 @@ def ListEpisodes(show_title, show_url, start_ep, end_ep):
 @route(PREFIX + "/getmirrors")	
 def GetMirrors(ep_url, ep_title, show_title):
 
-	oc = ObjectContainer()
+	oc = ObjectContainer(title2 = ep_title, no_cache = True)
 	page_data = HTML.ElementFromURL(ep_url)
 	
 	for each in page_data.xpath("//if/div[contains(@class, 'mirror')]"):
-		video_type = each.xpath("./div/div/@class")[0].split("_trait")[0].upper()
+		video_type = each.xpath("./div/div/@class")[0].split("_trait")[0].capitalize()
 		video_quality = each.xpath("./div/div/@class")[1].split("_trait")[0].upper().replace("_"," ")
 		video_id = each.xpath("./@rn")[0]
-		video_url = 'http:' + String.Quote(ep_url.split(':',1)[1], usePlus=False) + "??" + video_id
+		video_url = 'http:' + String.Quote(ep_url.split(':',1)[1], usePlus=False) + "?" + video_id
 		video_thumb = BASE_URL + each.xpath("./img/@src")[0]
-		video_host = each.xpath("./text()")[2].strip().upper()
-		video_title = video_type + " " + video_quality + " " + video_host
+		video_host = each.xpath("./text()")[2].strip()
+		video_title = video_type + " [" + video_quality + "] (" + video_host + ")"
 
 		oc.add(VideoClipObject(
 			url = video_url,
@@ -458,9 +458,9 @@ def GetMirrors(ep_url, ep_title, show_title):
 	
 	#provide a way to mark episode as watched or unwatched
 	oc.add(DirectoryObject(
-		key = Callback(EditWatched, ep_title = ep_title, show_title = show_title),
-		title = "Mark " + ep_title,
-		summary = "Mark " + ep_title + " as watched, making it easier to remember where you left off.",
+		key = Callback(EditWatchedEpisode, ep_title = ep_title, show_title = show_title),
+		title = "Mark this episode as watched/unwatched",
+		summary = "This will mark this episode as watched/unwatched, making it easier to remember where you left off.",
 		thumb = R(ICON_MARK)
 		)
 	)
@@ -494,11 +494,11 @@ def AddBookmark(show_title, show_url):
 		# remove empty dictionary file
 		if not Dict:
 			Dict.Reset()
-		return ObjectContainer(header=show_title, message='This show has been removed from your bookmarks.')
+		return ObjectContainer(header=show_title, message='This show has been removed from your bookmarks.', no_cache = True)
 	else:
 		Dict[show_title] = show_url
 		Dict.Save()
-		return ObjectContainer(header=show_title, message='This show has been added to your bookmarks.')
+		return ObjectContainer(header=show_title, message='This show has been added to your bookmarks.', no_cache = True)
 		
 ######################################################################################
 # Clears the Dict that stores the bookmarks list
@@ -514,38 +514,39 @@ def ClearBookmarks():
 		Dict.Save()
 	# remove empty dictionary file
 	Dict.Reset()
-	return ObjectContainer(header="My Bookmarks", message='Your bookmark list has been cleared.')
-			
+	return ObjectContainer(header="My Bookmarks", message='Your bookmark list has been cleared.', no_cache = True)
+		
 ######################################################################################
-# Adds and removes a show to the watched list
+# Adds a show to the watched list
 
-@route(PREFIX + "/editwatched")
-def EditWatched(ep_title, show_title):
-		
-	if Data.Exists(show_title):
-		
-		watched = []
-		watched = Data.LoadObject(show_title)
-		
-		if ep_title in watched:
-			watched.remove(ep_title)
-			Data.SaveObject(show_title, watched)
-			if not watched:
-				Data.Remove(show_title)
-			return ObjectContainer(header=ep_title, message='This episode has been removed from your watched list.')
-		else:
-			watched.insert(0, ep_title)
-			watched.sort()
-			Data.SaveObject(show_title, watched)
-			return ObjectContainer(header=ep_title, message='This episode has been added to your watched list.')
-	else:
-		watched = []
-		watched.insert(0, ep_title)
-		Data.SaveObject(show_title, watched)
-		return ObjectContainer(header=ep_title, message='This episode has been added to your watched list.')
+@route(PREFIX + "/addwatchedshow")
+def AddWatchedShow(show_url, show_title, start_ep, end_ep):
 
+        page_data = HTML.ElementFromURL(show_url)
+        eps_list = page_data.xpath("//div[@class='episode_box']")
+        
+        for each in eps_list[int(start_ep):int(end_ep)]:
+                ep_title = "Episode " + each.xpath("./div[@class='list_header_epnumber']/text()")[0].strip() + ": " + each.xpath("./div[@class='list_header_epname']/text()")[0].strip()
+                
+                if Data.Exists(show_title):
+                        watched = []
+                        watched = Data.LoadObject(show_title)
+                        
+                        if ep_title in watched:
+                                Data.SaveObject(show_title, watched)
+                        else:
+                                watched.insert(0, ep_title)
+                                watched.sort()
+                                Data.SaveObject(show_title, watched)
+                else:
+                        watched = []
+                        watched.insert(0, ep_title)
+                        Data.SaveObject(show_title, watched)
+                
+        return ObjectContainer(header=show_title, message='All episodes for this show have been marked as watched.', no_cache = True)
+               
 ######################################################################################
-# Remove watched mark from all episodes of a show
+# Removes a show from the watched list
 
 @route(PREFIX + "/removewatchedshow")
 def RemoveWatchedShow(show_url, show_title, start_ep, end_ep):
@@ -554,7 +555,7 @@ def RemoveWatchedShow(show_url, show_title, start_ep, end_ep):
 	eps_list = page_data.xpath("//div[@class='episode_box']")
 	
 	for each in eps_list[int(start_ep):int(end_ep)]:
-		ep_title = "Episode " + each.xpath("./div[@class='list_header_epnumber']/text()")[0].strip() + " " + each.xpath("./div[@class='list_header_epname']/text()")[0].strip()
+		ep_title = "Episode " + each.xpath("./div[@class='list_header_epnumber']/text()")[0].strip() + ": " + each.xpath("./div[@class='list_header_epname']/text()")[0].strip()
 		
 		if Data.Exists(show_title):
 			watched = []
@@ -566,33 +567,32 @@ def RemoveWatchedShow(show_url, show_title, start_ep, end_ep):
 				if not watched:
 					Data.Remove(show_title)
 
-	return ObjectContainer(header=show_title, message='All watched marks for this show have been removed.', no_cache = True)
+        return ObjectContainer(header=show_title, message='All episodes for this show have been marked as unwatched.', no_cache = True)
 
 ######################################################################################
-# Add watched mark for all episodes of a show
+# Adds and removes an episode to the watched list
 
-@route(PREFIX + "/addwatchedshow")
-def AddWatchedShow(show_url, show_title, start_ep, end_ep):
-	
-	page_data = HTML.ElementFromURL(show_url)
-	eps_list = page_data.xpath("//div[@class='episode_box']")
-	
-	for each in eps_list[int(start_ep):int(end_ep)]:
-		ep_title = "Episode " + each.xpath("./div[@class='list_header_epnumber']/text()")[0].strip() + " " + each.xpath("./div[@class='list_header_epname']/text()")[0].strip()
-		
-		if Data.Exists(show_title):
-			watched = []
-			watched = Data.LoadObject(show_title)
-			
-			if ep_title in watched:
-				Data.SaveObject(show_title, watched)
-			else:
-				watched.insert(0, ep_title)
-				watched.sort()
-				Data.SaveObject(show_title, watched)
-		else:
-			watched = []
-			watched.insert(0, ep_title)
-			Data.SaveObject(show_title, watched)
-		
-	return ObjectContainer(header=show_title, message='All episodes for this show have been marked as watched.', no_cache = True)
+@route(PREFIX + "/editwatchedepisode")
+def EditWatchedEpisode(ep_title, show_title):
+
+        if Data.Exists(show_title):
+
+                watched = []
+                watched = Data.LoadObject(show_title)
+
+                if ep_title in watched:
+                        watched.remove(ep_title)
+                        Data.SaveObject(show_title, watched)
+                        if not watched:
+                                Data.Remove(show_title)
+                        return ObjectContainer(header=ep_title, message='This episode has been removed from your watched list.', no_cache = True)
+                else:
+                        watched.insert(0, ep_title)
+                        watched.sort()
+                        Data.SaveObject(show_title, watched)
+                        return ObjectContainer(header=ep_title, message='This episode has been added to your watched list.', no_cache = True)
+        else:
+                watched = []
+                watched.insert(0, ep_title)
+                Data.SaveObject(show_title, watched)
+                return ObjectContainer(header=ep_title, message='This episode has been added to your watched list.', no_cache = True)
