@@ -38,13 +38,13 @@ System Requirements
 How To Install
 ==============
 
-- [Download](https://github.com/TehCrucible/rawrANIME.bundle/archive/master.zip) the latest version of the plugin.
+- [Download](https://github.com/JonnyWong16/rawrANIME.bundle/archive/master.zip) the latest version of the plugin.
 
 - Unzip and rename folder to "rawrANIME.bundle"
 
 - Copy rawrANIME.bundle into the PMS plugins directory under your user account:
-	- Windows 7, Vista, or Server 2008: C:\Users[Your Username]\AppData\Local\Plex Media Server\Plug-ins
-	- Windows XP, Server 2003, or Home Server: C:\Documents and Settings[Your Username]\Local Settings\Application Data\Plex Media Server\Plug-ins
+	- Windows 7, Vista, or Server 2008: C:\Users\\[Your Username]\AppData\Local\Plex Media Server\Plug-ins
+	- Windows XP, Server 2003, or Home Server: C:\Documents and Settings\\[Your Username]\Local Settings\Application Data\Plex Media Server\Plug-ins
 	- Mac/Linux: ~/Library/Application Support/Plex Media Server/Plug-ins
 
 - Restart PMS
@@ -58,19 +58,24 @@ Known Issues
 Changelog
 =========
 
-**0.05** - 26/07-15 - Many cosmetic changes
-                    - Fixed bookmarks
-                    - Mark shows/episodes as watched/unwatched
+- **v0.05** - 2015-07-26
+	- Many cosmetic changes
+	- Fixed bookmarks
+	- Mark shows/episodes as watched/unwatched
 
-**0.04** - 30/09/14 - Added Latest Episodes list.
+- **v0.04** - 2014-09-30
 
-**0.03** - 07/07/14 - Fix bug caused by non-unicode characters in video urls.
+	- Added Latest Episodes list
 
-**0.02** - 08/06/14 - Fix for mp4upload. Fix add bookmark string.
+- **v0.03** - 2014-07-07
 
-**0.01** - 21/03/14 - Initial release.
+	- Fix bug caused by non-unicode characters in video urls
 
-Donate
-======
+- **v0.02** - 2015-06-08
 
-Like my work?  [Buy me a coffee.](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JUV2JAVFXY86Q)  =)
+	- Fix for mp4upload
+	- Fix add bookmark string
+
+- **v0.01** - 2014-03-21
+
+	- Initial release
