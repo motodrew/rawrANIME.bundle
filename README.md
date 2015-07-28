@@ -62,6 +62,7 @@ Changelog
 - **v0.05** - 2015-07-26
 	- Many cosmetic changes
 	- Fixed bookmarks
+	- A - Z browsing of all shows
 	- Mark shows/episodes as watched/unwatched
 	- Works on AndroidTV
 
