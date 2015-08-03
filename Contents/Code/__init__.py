@@ -34,7 +34,7 @@ def Start():
 	VideoClipObject.thumb = R(ICON_COVER)
 	VideoClipObject.art = R(ART)
 	
-	HTTP.CacheTime = CACHE_1HOUR
+#	HTTP.CacheTime = CACHE_1HOUR
 	HTTP.Headers['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36'
 	HTTP.Headers['Referer'] = 'http://rawranime.tv/'
 	
@@ -174,7 +174,7 @@ def LatestCategory(title):
 	#check for results and display an error if none
 	if len(oc) < 1:
 		Log ("No shows found! Check xpath queries.")
-		return ObjectContainer(header="Error", message="Error! Please let TehCrucible know, at the Plex forums.", no_cache = True)
+		return ObjectContainer(header="Error", message="No shows found.", no_cache = True)
 	
 	return oc	
 		
@@ -204,7 +204,7 @@ def ShowCategory(title, category):
 	#check for results and display an error if none
 	if len(oc) < 1:
 		Log ("No shows found! Check xpath queries.")
-		return ObjectContainer(header="Error", message="Error! Please let TehCrucible know, at the Plex forums.", no_cache = True)
+		return ObjectContainer(header="Error", message="No shows found.", no_cache = True)
 	
 	return oc
 	
@@ -256,7 +256,7 @@ def ShowCategorySorted(title, category, category_title):
 	page_data = HTML.ElementFromURL(BASE_URL + category)
 	list_all = "List All"
 	list_category = ('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','W','Y','Z')
-		
+	
 	for each in page_data.xpath("//tr[contains(@class, 'list ')]"):
 
 		show_url = each.xpath("./td[@class='animetitle']/a/@href")[0]
@@ -291,7 +291,7 @@ def ShowCategorySorted(title, category, category_title):
 	#check for results and display an error if none
 	if len(oc) < 1:
 		Log ("No shows found! Check xpath queries.")
-		return ObjectContainer(header="Error", message="Error! Please let TehCrucible know, at the Plex forums.", no_cache = True)
+		return ObjectContainer(header="Error", message="No shows found.", no_cache = True)
 	
 	return oc
 	
