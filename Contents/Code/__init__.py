@@ -1,6 +1,6 @@
 ######################################################################################
 #
-#	rawrANIME (BY TEHCRUCIBLE) - v0.05
+#	rawrANIME (BY TEHCRUCIBLE) - v0.06
 #
 ######################################################################################
 
@@ -49,6 +49,7 @@ def MainMenu():
 	oc.add(DirectoryObject(key = Callback(ChooseAlphabetically, title="All Anime", category = "/list/listmode"), title = "All Anime", thumb = R(ICON_LIST)))
 	oc.add(DirectoryObject(key = Callback(ChooseAlphabetically, title="Ongoing Anime", category = "/list/ongoing"), title = "Ongoing Anime", thumb = R(ICON_LIST)))
 	oc.add(DirectoryObject(key = Callback(ChooseAlphabetically, title="Movies", category = "/list/movies"), title = "Movies", thumb = R(ICON_LIST)))
+	oc.add(DirectoryObject(key = Callback(Genres, title="Genres", category = "/list/popular"), title = "Genres", thumb = R(ICON_LIST)))
 	oc.add(DirectoryObject(key = Callback(ShowCategory, title="Top Rated", category = "/list/toprated"), title = "Top Rated", thumb = R(ICON_LIST)))
 	oc.add(DirectoryObject(key = Callback(ShowCategory, title="Most Popular", category = "/list/popular"), title = "Most Popular", thumb = R(ICON_LIST)))
 	oc.add(DirectoryObject(key = Callback(ShowCategory, title="Most Popular Ongoing", category = "/list/popularongoing"), title = "Most Popular Ongoing", thumb = R(ICON_LIST)))
@@ -56,6 +57,21 @@ def MainMenu():
 	oc.add(InputDirectoryObject(key=Callback(Search), title = "Search", prompt = "Search for anime?", thumb = R(ICON_SEARCH)))
 	
 	return oc
+
+######################################################################################
+# Create Genres hierarchy
+@route(PREFIX + "/genres")
+def Genres(title, category):
+	oc = ObjectContainer(title1 = title)
+	genreList = ['action', 'adventure', 'comedy', 'drama', 'ecchi', 'fantasy', 'games', 'harem', 'historical', 'horror', 'josei', 'law', 'magic', 'magicalgirl', 'mecha', 'music', 'mystery', 'ninjas', 'parody', 'psychological', 'racing', 'reverseharem', 'romance', 'school', 'sciencefiction', 'seinen', 'shoujo', 'shoujoai', 'shounen', 'shounenai', 'sliceoflife', 'space', 'sports', 'superpower', 'supernatural', 'swordplay', 'thriller', 'vampires', 'yaoi', 'yuri']
+	
+	#Populate each genre with all anime from that genre & add to container
+	for each in genreList:
+		genreCategory = "//index.php?app=anime&module=list&sort=list&genrevar[]+=" + each
+		oc.add(DirectoryObject(key = Callback(ShowCategory, title = each, category = genreCategory), title = each.capitalize(), thumb = R(ICON_LIST)))
+		
+	return oc
+
 
 ######################################################################################
 # Loads bookmarked shows from Dict.  Titles are used as keys to store the show urls.
